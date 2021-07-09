@@ -1,0 +1,15 @@
+.container{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: whitesmoke;
+    box-shadow: 4px 4px 15px black;
+}
+
+#checkout{
+    margin-top: 8px;
+}
+
+button{
+    margin-bottom: 6px;
+}

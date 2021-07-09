@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- 
+    Isaac Kirk
+    Vue Movie Tickets
+    CIS-131-102 -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap and CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="styles.css">
+    <title>Movies</title>
+    <!-- Axios, Vue, JS -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="scripts.js"></script>
+</head>
+<body>
+    <!-- Vue -->
+    <div id="app">
+        <!-- Vue manages the shopping car button in nav -->
+        <nav class="navbar navbar-light bg-light">
+            <a class="navbar-brand" href="#">Movies</a>
+            <div>
+                <!-- Click on shopping cart for the ticket summary to appear at all -->
+                <button class="btn btn-primary" @click="CheckOut">
+                    <span class="badge badge-primary">{{totalAdult + totalChild}}</span>
+                    <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-cart" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+                    </svg>
+                </button>
+            </div>
+          </nav>
+    
+        <!-- Main Bootstrap Container -->  
+        <div class="container">
+            <div class="card-deck">
+                <!-- Vue Component that stores different movies -->
+                <productdisplay  v-on:updatecart="UpdateCart($event)" v-on:updatetotaltickets="UpdateTotalTickets($event)" v-for="movie in movies" v-bind:title="movie.title" v-bind:overview="movie.overview" v-bind:poster="movie.poster_path" >
+                </productdisplay>
+            </div>
+            
+            <!-- Ticket Summary, only appears if there are any cartObjects and the shopping cart button appeared-->
+            <div id="checkout" v-if="showCart && (totalAdult + totalChild) > 0">
+                <h1>Ticket Checkout</h1>
+                <table class="table table-striped">
+                <thead>
+                    <tr>
+                    <th scope="col">Movie</th>
+                    <th scope="col">Adult Tickets</th>
+                    <th scope="col">Children's Ticket</th>
+                    <th scope="col">Subtotal</th>
+                    <th scope="col">Button</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- For each cart object that has one adult or child ticket, displays the info -->
+                    <tr v-for="obj in cartObjects" v-if="obj.adultTicket > 0 || obj.childTicket > 0">
+                        <th scope="row">{{obj.movieTitle}}</th>
+                        <td v-if="obj.adultTicket != 0">{{obj.adultTicket}} X ${{adultPrice}} <button class="btn btn-primary" @click="SubtractTicket(obj, 0)">-</button></td>
+                        <td v-else></td>
+                        <td v-if="obj.childTicket != 0">{{obj.childTicket}} X ${{childPrice}} <button class="btn btn-primary" @click="SubtractTicket(obj, 1)">-</button></td>
+                        <td v-else></td>
+                        <td>${{(obj.childTicket * childPrice) + (obj.adultTicket * adultPrice)}}</td>
+                        <td><button class="btn btn-primary" @click="Delete(obj)">Delete</button></td>
+                    </tr>
+                    <!-- The overall totals, displays if greater than 0 -->
+                    <tr v-if="totalAdult > 0">
+                        <td colspan="2"></td>
+                        <td>Adult Subtotal</td>
+                        <td>{{totalAdult}} @ ${{totalAdult * adultPrice}}</td>
+                        <td></td>
+                    </tr>
+                    <tr v-if="totalChild > 0">
+                        <td colspan="2"></td>
+                        <td>Children Subtotal</td>
+                        <td>{{totalChild}} @ ${{totalChild * childPrice}}</td>
+                        <td></td>
+                    </tr>
+                    <tr v-if="totalChild > 0 || totalAdult > 0">
+                        <td colspan="2"></td>
+                        <td>Total</td>
+                        <td>{{totalChild + totalAdult}} @ ${{(totalChild * childPrice) + (totalAdult * adultPrice)}}</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+                </table>  
+            </div>
+        </div>
+    </div>
+</body>
+</html>
